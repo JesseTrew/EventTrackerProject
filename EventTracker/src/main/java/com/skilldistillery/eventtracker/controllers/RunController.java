@@ -30,7 +30,7 @@ public class RunController {
 		return svc.allRuns();
 	}
 	
-	@GetMapping("runs/{rid}')")
+	@GetMapping("runs/{rid}")
 	public Run getRun(
 			@PathVariable Integer rid,
 			HttpServletResponse resp
