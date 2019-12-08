@@ -70,7 +70,6 @@ public class RunController {
 			e.printStackTrace();
 			resp.setStatus(401);
 		}
-			
 		return run;
 	}
 	

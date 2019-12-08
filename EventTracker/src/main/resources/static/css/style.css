@@ -1,0 +1,13 @@
+@charset "UTF-8";
+
+fieldset {
+   border: solid 1px navy;
+   box-shadow: 5px 5px 10px gray;
+   display: inline-block;
+   padding: 8px;
+   margin-bottom: 5px;
+}
+
+.red {
+   color: red;
+}
