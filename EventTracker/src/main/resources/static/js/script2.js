@@ -18,7 +18,7 @@ function init() {
 
 			var body = document.getElementsByTagName('body')[0];
 
-			for (let i = 0; i < data.length; i++) {
+			for (let i = 0 ; i < data.length ; i++) {
 
 				let div = document.createElement('div');
 				body.appendChild(div);

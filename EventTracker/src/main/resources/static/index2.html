@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>The Runs Webapp</title>
+<script type="text/javascript" src="js/script.js"></script>
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+
+	<h1>The Runs App</h1>
+	<h3>Track <em>all</em> the runs, all the time</h3>
+	
+	<fieldset>
+      <legend> Log a Run </legend>
+      
+      <form name="runLogForm">
+         
+         
+         <table>
+         
+         	<tr>
+               <td colspan="2"> <hr> </td>
+            </tr>
+            <tr>
+               <td align="right"> Distance: </td>
+               <td> <input type="text" name="distance" placeholder="distance run"> </td>
+            </tr>
+         
+            <tr>
+               <td align="right"> Duration (mins): </td>
+               <td> <input type="text" name="duration" placeholder="run duration"> </td>
+            </tr>
+            <tr>
+               <td align="right"> Date: </td>
+               <td> <input type="date" name="date" placeholder="YYYY-MM-DD"> </td>
+            </tr>
+            <tr>
+               <td> </td>
+               <td> <input type="submit" name="submit" value="Submit"> </td>
+            </tr>
+            <tr>
+               <td colspan="2"> <hr> </td>
+            </tr>
+         </table>
+      </form>
+   </fieldset>
+	<div id="errors" class="red">
+    </div>
+</body>
+</html>

@@ -4,118 +4,226 @@ window.addEventListener('load', function(e) {
 
 function init() {
 
+	document.createRunForm.submit.addEventListener('click', function(e){
+		
+		var newDist = document.createRunForm.distance.value;
+		var newDur = document.createRunForm.duration.value;
+		var newDate = document.createRunForm.date.value;
+		
+		var errors = verifyFormData(newDur, newDist, newDate);
+
+		if (errors.length > 0) {
+			console.log(errors);
+			alert("errors in your input fields.")
+			// TODO -- FLESH OUT ERROR MSGS
+		}
+
+		if (errors.length === 0) {
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', 'api/runs', true);
+
+			xhr.setRequestHeader("Content-type", "application/json");
+
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === 4 && xhr.status < 400) {
+						
+					let data1 = JSON.parse(xhr.responseText);
+					console.log(data1);
+					alert("Success! Your new run has been logged.");
+					document.runLogForm.reset();
+					location.reload();
+					
+				} else {
+						console.log("POST request failed.");
+						console.error(xhr.status + ': ' + xhr.responseText);
+				}
+			
+			};
+		
+			var runObject = {
+					
+					distance : newDist,
+					duration : newDur,
+					date : newDate
+					
+			};
+			
+			var runObjectJson = JSON.stringify(runObject);
+			xhr.send(runObjectJson);
+		}
+	});
+	
 	var xhr = new XMLHttpRequest();
 
 	xhr.open('GET', 'api/runs', true);
-
-	xhr.setRequestHeader("Content-type", "application/json");
 
 	xhr.onreadystatechange = function() {
 
 		if (xhr.readyState === 4 && xhr.status < 400) {
 
 			var data = JSON.parse(xhr.responseText);
-
-			var body = document.getElementsByTagName('body')[0];
-
+			
+			var totalMilesRun = 0;
+			
 			for (let i = 0; i < data.length; i++) {
-
-				let div = document.createElement('div');
-				body.appendChild(div);
-
-				let p = document.createElement('p');
-				p.size = "7";
-				p.style = "font-family:verdana;";
-				p.textContent = "Run #" + data[i].id + " -- " + "Distance: "
-						+ data[i].distance + " -- " + "Duration: "
-						+ data[i].duration + " -- " + "Date: " + data[i].date;
 				
-				div.appendChild(p);
+				totalMilesRun += data[i].distance;
+				
+				let eventDiv = document.createElement('div');
+				document.body.appendChild(eventDiv);
 
-				p.addEventListener('click', function(e){
-					
+				let eventDivDeleteBtn = document.createElement('div');
+				document.body.appendChild(eventDivDeleteBtn);
+				
+				let eventP = document.createElement('p');
+				eventP.size = "7";
+				eventP.style = "font-family:verdana;";
+				eventP.textContent = "Run #" + data[i].id + " -- "
+						+ "Distance: " + data[i].distance + " miles -- "
+						+ "Duration: " + data[i].duration + " mins -- " 
+						+ "Date: " + data[i].date;
+
+				eventDiv.appendChild(eventP);
+
+				eventP.addEventListener('click', function(e) {
+
 					e.preventDefault();
-				
+
 					let uDist = data[i].distance;
 					let uDur = data[i].duration;
-					
-					var createForm = document.createElement('form');
-					createForm.setAttribute("name", "updateForm");
-					div.appendChild(createForm);
+
+					var updateForm = document.createElement('form');
+					updateForm.setAttribute("name", "uForm");
+					eventDiv.appendChild(updateForm);
 
 					var heading = document.createElement('h4');
 					heading.innerHTML = "Update Run Info ";
-					createForm.appendChild(heading);
+					updateForm.appendChild(heading);
 
 					var lineBreak = document.createElement('br');
-					createForm.appendChild(lineBreak);
+					updateForm.appendChild(lineBreak);
 
-					var distanceElement = document.createElement('input');
-					distanceElement.setAttribute("type", "text");
-					distanceElement.setAttribute("name", "uDistance");
-					distanceElement.setAttribute("value", uDist);
-					createForm.appendChild(distanceElement);
-
-					var lineBreak = document.createElement('br');
-					createForm.appendChild(lineBreak);
-
-					var durationElement = document.createElement('input');
-					durationElement.setAttribute("type", "text");
-					durationElement.setAttribute("name", "uDuration");
-					durationElement.setAttribute("value", uDur);
-					createForm.appendChild(durationElement);
+					var distanceInput = document.createElement('input');
+					distanceInput.setAttribute("type", "text");
+					distanceInput.setAttribute("name", "uDistance");
+					distanceInput.setAttribute("value", uDist);
+					updateForm.appendChild(distanceInput);
 
 					var lineBreak = document.createElement('br');
-					createForm.appendChild(lineBreak);
+					updateForm.appendChild(lineBreak);
 
-					var dateElement = document.createElement('input');
-					dateElement.setAttribute("type", "date");
-					dateElement.setAttribute("name", "uDate");
-					createForm.appendChild(dateElement);
+					var durationInput = document.createElement('input');
+					durationInput.setAttribute("type", "text");
+					durationInput.setAttribute("name", "uDuration");
+					durationInput.setAttribute("value", uDur);
+					updateForm.appendChild(durationInput);
 
 					var lineBreak = document.createElement('br');
-					createForm.appendChild(lineBreak);
+					updateForm.appendChild(lineBreak);
 
+					var dateInput = document.createElement('input');
+					dateInput.setAttribute("type", "date");
+					dateInput.setAttribute("name", "uDate");
+					updateForm.appendChild(dateInput);
+
+					var lineBreak = document.createElement('br');
+					updateForm.appendChild(lineBreak);
+					
 					var submitElement = document.createElement('input');
 					submitElement.setAttribute("type", "submit");
-					submitElement.setAttribute("id", "uSubmit");
+					submitElement.setAttribute("name", "uSubmit");
 					submitElement.setAttribute("value", "Update");
-					createForm.appendChild(submitElement);
-
-					div.appendChild(createForm);
+					updateForm.appendChild(submitElement);
 					
-					
-					document.updateForm.uSubmit.addEventListener('click', updateRun(data[i].id));
-
 					var lineBreak = document.createElement('br');
-					div.appendChild(lineBreak);
+					updateForm.appendChild(lineBreak);
 					
-					var deleteForm = document.createElement('form');
-					createForm.setAttribute("name", "deleteForm");
-					div.appendChild(createForm);
+					var deleteBtn = document.createElement('button');
+					deleteBtn.setAttribute("id", "delBtn");
+					deleteBtn.innerHTML = "Delete This Run";
+					eventDiv.appendChild(deleteBtn);
 
+				    document.getElementById("delBtn").addEventListener("click", function(e){ 
+				    	
+						e.preventDefault();
+						
+						console.log(data[i].id);
+				    	
+				    	var xhr = new XMLHttpRequest();
 
-					var submitElement = document.createElement('input');
-					submitElement.setAttribute("type", "submit");
-					submitElement.setAttribute("id", "remove");
-					submitElement.setAttribute("value", "Delete This Run");
-					deleteForm.appendChild(submitElement);
+				    	xhr.open('DELETE', 'api/run/' + data[i].id);
 
-					div.appendChild(deleteForm);
+				    	xhr.setRequestHeader("Content-type", "application/json");
 
-					document.deleteForm.remove.addEventListener('click', deleteRun(data[i].id));
+				    	xhr.onreadystatechange = function() {
+
+				    		if (xhr.readyState === 4 && xhr.status < 400) {
+				    			alert("Success! Your run has been deleted.");
+				    			location.reload();
+				    		}
+
+				    		if (xhr.readyState === 4 && xhr.status >= 400) {
+				    			console.error(xhr.status + ': ' + xhr.responseText);
+				    			alert("Failed! There has been a problem deleting run. Please try again.");
+				    		}
+				    	};
+
+				    	xhr.send();
+				    });
+
+					var line = document.createElement('hr');
+					eventDiv.appendChild(line);
+					
+					submitElement.addEventListener('click', function(e){
+
+						e.preventDefault();
+
+						var xhr = new XMLHttpRequest();
+						
+						xhr.open('PUT', 'api/runs/' + data[i].id, true);
+						
+						xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+						
+						xhr.onreadystatechange = function() {
+
+							if (xhr.readyState === 4 && xhr.status < 400) {
+								alert("Success! Your run has been updated.");
+								location.reload();
+							}
+
+							if (xhr.readyState === 4 && xhr.status >= 400) {
+								console.error(xhr.status + ': ' + xhr.responseText);
+								alert("Failed! There has been a problem updating this run. Please try again.");
+							}
+							
+						};
+						
+						var dataObject = {
+								
+								distance: document.uForm.uDistance.value,
+								duration: document.uForm.uDuration.value,
+								date: document.uForm.uDate.value
+								
+						};
+						
+						var json = JSON.stringify(dataObject);
+						xhr.send(json);
+					});
 					
 				});
 			}
+			
+			let totalMilesP = document.createElement('p');
+			totalMilesP.innerHTML = "Your total miles run: " + totalMilesRun;
+			document.body.appendChild(totalMilesP);
 		}
 
 		if (xhr.readyState === 4 && xhr.status >= 400) {
 			console.error(xhr.status + ': ' + xhr.responseText);
 		}
-		
-		document.runLogForm.submit.addEventListener('click', createRun());
-							
-	}
+	};
+
 	xhr.send(null);
 }
 
@@ -144,105 +252,5 @@ function verifyFormData(duration, distance, date) {
 	}
 	console.log(errorArray);
 	return errorArray;
-}
-
-function deleteRun(runId){
-
-	var xhr = new XMLHttpRequest();
-
-	xhr.open('DELETE', 'api/runs/' + runId);
-
-	xhr.setRequestHeader("Content-type", "application/json");
-
-	xhr.onreadystatechange = function() {
-
-		if (xhr.readyState === 4 && xhr.status < 400) {
-			alert("Success! Your run has been deleted.");
-			location.reload();
-		}
-
-		if (xhr.readyState === 4 && xhr.status >= 400) {
-			console.error(xhr.status + ': ' + xhr.responseText);
-			alert("Failed! There has been a problem deleting run. Please try again.");
-		}
-	};
-
-	xhr.send();
-
-}
-
-function updateRun(runId) {
-
-	var xhr = new XMLHttpRequest();
-	xhr.open('PUT', 'api/runs/' + runId, true);
-	xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 	
-	xhr.onreadystatechange = function() {
-
-		if (xhr.readyState === 4 && xhr.status < 400) {
-			alert("Success! Your run has been updated.");
-			location.reload();
-		}
-
-		if (xhr.readyState === 4 && xhr.status >= 400) {
-			console.error(xhr.status + ': ' + xhr.responseText);
-			alert("Failed! There has been a problem updating this run. Please try again.");
-		}
-		var data = {
-				distance: document.updateForm.uSubmit.uDistance.value,
-				duration: document.updateForm.uSubmit.uDuration.value,
-				date: document.updateForm.uSubmit.uDate.value
-		};
-
-		var json = JSON.stringify(data);
-		xhr.send(json);
-
-	}
-}
-
-function createRun(){
-
-	var newDist = document.runLogForm.distance.value;
-	var newDur = document.runLogForm.duration.value;
-	var newDate = document.runLogForm.date.value;
-	var errors = verifyFormData(newDur, newDist, newDate);
-
-	if (errors.length > 0) {
-		console.log(errors);
-		alert("errors in your input fields.")
-		// TODO -- FLESH OUT ERROR MSGS
-	}
-
-	if (errors.length === 0) {
-
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST', 'api/runs', true);
-
-		xhr.setRequestHeader("Content-type", "application/json");
-
-		xhr.onreadystatechange = function() {
-			if (xhr.readyState === 4) {
-				if (xhr.status == 200 || xhr.status == 201) {
-					var data = JSON.parse(xhr.responseText);
-					console.log(data);
-					alert("Success! Your new run has been logged.");
-					document.runLogForm.reset();
-					location.reload();
-				} else {
-					console.log("POST request failed.");
-					console.error(xhr.status + ': ' + xhr.responseText);
-				}
-			}
-		};
-
-		var userObject = {
-			distance : newDist,
-			duration : newDur,
-			date : newDate
-		};
-
-		var userObjectJson = JSON.stringify(userObject);
-
-		xhr.send(userObjectJson);
-	}
 }
