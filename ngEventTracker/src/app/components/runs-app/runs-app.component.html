@@ -13,7 +13,7 @@
 
 <div *ngIf=" ! editRun">
 
-   <p *ngFor="let run of runs" (click) = "editRun = run"><em>Run #{{run.id}}</em> Distance: {{run.distance}} -- Duration: {{run.distance}} -- Date: {{run.date}} </p>
+   <p *ngFor="let run of runs" (click) = "editRun = run"><em>Run #{{run.id}}</em> Distance: {{run.distance}} mi -- Duration: {{run.duration}} min -- Date: {{run.date}} </p>
 
    <p>Total Miles Run: {{totalMiles}}</p>
 </div>
