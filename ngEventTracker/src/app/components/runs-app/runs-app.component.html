@@ -1,0 +1,35 @@
+<h1>WELCOME TO THE RUNS APP!</h1>
+<div id="createNewRun" *ngIf=" ! editRun">
+    <form #createNewRunForm="ngForm">
+        <label for="distance">Distance</label>
+        <input type="number" name="distance" ngModel placeholder="Distance (mi)"/><br>
+        <label for="duration">Duration</label>
+        <input type="number" name="duration" ngModel placeholder="Duration (mins)"/><br>
+        <label for="date">Date</label>
+        <input type="date" name="date" ngModel /><br>
+        <input type="submit" name="submit" value="Add" (click)="addRun(createNewRunForm)">
+      </form>
+</div>
+
+<div *ngIf=" ! editRun">
+
+   <p *ngFor="let run of runs" (click) = "editRun = run"><em>Run #{{run.id}}</em> Distance: {{run.distance}} -- Duration: {{run.distance}} -- Date: {{run.date}} </p>
+
+   <p>Total Miles Run: {{totalMiles}}</p>
+</div>
+
+<div id="updateRunForm" *ngIf="editRun">
+  <p>Update Run #{{editRun.id}}</p>
+  <form>
+    <label for="distance">Distance</label>
+    <input type="number" name="distance" [(ngModel)]="editRun.distance"/><br>
+    <label for="duration">Duration</label>
+    <input type="number" name="duration" [(ngModel)]="editRun.duration"/><br>
+    <label for="date">Date</label>
+    <input type="date" name="date" [(ngModel)]="editRun.date" /><br>
+    <input type="submit" name="submit" value="Update" (click)="updateRun(editRun)">
+  </form>
+  <button (click) = "deleteRun(editRun.id)" class="btn btn-primary"> Delete Run </button>
+  <button (click) = "editRun = null" class="btn btn-primary"> Back </button>
+
+</div>
